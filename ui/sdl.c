@@ -69,6 +69,11 @@ static int idle_counter;
 static const guint16 *keycode_map;
 static size_t keycode_maplen;
 
+#ifndef True
+#define True 1
+#endif
+static doing_grabs = True;
+
 #define SDL_REFRESH_INTERVAL_BUSY 10
 #define SDL_MAX_IDLE_COUNT (2 * GUI_REFRESH_INTERVAL_DEFAULT \
                             / SDL_REFRESH_INTERVAL_BUSY + 1)
@@ -399,14 +404,16 @@ static void sdl_grab_start(void)
         }
     } else
         sdl_hide_cursor();
-    SDL_WM_GrabInput(SDL_GRAB_ON);
+    if (doing_grabs)
+      SDL_WM_GrabInput(SDL_GRAB_ON);
     gui_grab = 1;
     sdl_update_caption();
 }
 
 static void sdl_grab_end(void)
 {
-    SDL_WM_GrabInput(SDL_GRAB_OFF);
+    if (doing_grabs)
+      SDL_WM_GrabInput(SDL_GRAB_OFF);
     gui_grab = 0;
     sdl_show_cursor();
     sdl_update_caption();
@@ -944,6 +951,8 @@ static void sdl1_display_init(DisplayState *ds, DisplayOptions *o)
     /* Enable normal up/down events for Caps-Lock and Num-Lock keys.
      * This requires SDL >= 1.2.14. */
     setenv("SDL_DISABLE_LOCK_KEYS", "1", 1);
+
+    doing_grabs = (getenv("QEMU_DONT_GRAB") == NULL);
 
     flags = SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE;
     if (SDL_Init (flags)) {
