@@ -1768,6 +1768,8 @@ static void *qemu_tcg_cpu_thread_fn(void *arg)
     return NULL;
 }
 
+#include "custom_debug.h"
+
 static void qemu_cpu_kick_thread(CPUState *cpu)
 {
 #ifndef _WIN32
@@ -1780,6 +1782,9 @@ static void qemu_cpu_kick_thread(CPUState *cpu)
     err = pthread_kill(cpu->thread->thread, SIG_IPI);
     if (err) {
         fprintf(stderr, "qemu:%s: %s", __func__, strerror(err));
+        fprintf(stderr, "CPU #%d:\n", cpu->cpu_index);
+        cpu_dump_state(cpu, stderr, fprintf, 0);
+        backtrace_print();
         exit(1);
     }
 #else /* _WIN32 */
