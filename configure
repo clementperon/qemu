@@ -5093,15 +5093,6 @@ fi
 # check if we have valgrind/valgrind.h
 
 valgrind_h=no
-cat > $TMPC << EOF
-#include <valgrind/valgrind.h>
-int main(void) {
-  return 0;
-}
-EOF
-if compile_prog "" "" ; then
-    valgrind_h=yes
-fi
 
 ########################################
 # check if environ is declared
