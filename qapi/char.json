@@ -242,6 +242,10 @@
 #
 # @addr: socket address to listen on (server=true)
 #        or connect to (server=false)
+# @cmd: command to run via "sh -c" with stdin as one end of
+#       a AF_UNIX SOCK_DSTREAM socket pair. The other end
+#       is used by the chardev. Either an addr or a cmd can
+#       be specified, but not both.
 # @tls-creds: the ID of the TLS credentials object (since 2.6)
 # @server: create server socket (default: true)
 # @wait: wait for incoming connection on server
@@ -261,6 +265,7 @@
 # Since: 1.4
 ##
 { 'struct': 'ChardevSocket', 'data': { 'addr'       : 'SocketAddressLegacy',
+                                     '*cmd'       : 'str',
                                      '*tls-creds'  : 'str',
                                      '*server'    : 'bool',
                                      '*wait'      : 'bool',
